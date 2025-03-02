@@ -1,12 +1,12 @@
 <?php
 class User {
     private $conn;
-    private $table_name = "user";
+    private $table_name = "users"; // Updated table name
     public $id;
-    public $name;
+    public $username; // Updated from 'name' to 'username'
     public $email;
     public $password;
-    public $num;
+    public $phone_number; // Updated from 'num' to 'phone_number'
 
     public function __construct($db) {
         $this->conn = $db;
@@ -39,27 +39,30 @@ class User {
 
     // Update a user
     public function updateUser() {
-        $query = "UPDATE " . $this->table_name . " SET name = :name, email = :email, password = :password, num = :num WHERE id = :id";
+        $query = "UPDATE " . $this->table_name . " SET username = :username, email = :email, password = :password, phone_number = :phone_number WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
-        $stmt->bindParam(':name', $this->name);
+        $stmt->bindParam(':username', $this->username); // Updated from 'name' to 'username'
         $stmt->bindParam(':email', $this->email);
         $stmt->bindParam(':password', $this->password);
-        $stmt->bindParam(':num', $this->num);
-        return $stmt->execute();
-    }
-    public function register($name, $email, $password, $num) {
-        $query = "INSERT INTO users (name, email, password, num) VALUES (:name, :email, :password, :num)";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', password_hash($password, PASSWORD_DEFAULT));
-        $stmt->bindParam(':num', $num);
+        $stmt->bindParam(':phone_number', $this->phone_number); // Updated from 'num' to 'phone_number'
         return $stmt->execute();
     }
 
+    // Register a new user
+    public function register($username, $email, $password, $phone_number) {
+        $query = "INSERT INTO " . $this->table_name . " (username, email, password, phone_number) VALUES (:username, :email, :password, :phone_number)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':username', $username); // Updated from 'name' to 'username'
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', password_hash($password, PASSWORD_DEFAULT));
+        $stmt->bindParam(':phone_number', $phone_number); // Updated from 'num' to 'phone_number'
+        return $stmt->execute();
+    }
+
+    // Login a user
     public function login($email, $password) {
-        $query = "SELECT * FROM users WHERE email = :email";
+        $query = "SELECT * FROM " . $this->table_name . " WHERE email = :email";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':email', $email);
         $stmt->execute();
@@ -70,11 +73,13 @@ class User {
         return false;
     }
 
+    // Forgot password
     public function forgotPassword($email) {
-        $query = "SELECT * FROM users WHERE email = :email";
+        $query = "SELECT * FROM " . $this->table_name . " WHERE email = :email";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':email', $email);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
+?>

@@ -1,8 +1,14 @@
 // controllers/UserController.php
 <?php
 require_once '../../models/User.php';
+require_once "../../config/database.php";
 
 class UserController {
+    public function showStatistics() {
+        $userModel = new User();
+        $totalUsers = $userModel->findAll();
+        include '../../views/big_admin/statistics.php';
+    }
 
     public function register() {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
